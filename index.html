@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Торговый Терминал</title>
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: #121212; /* Темный фон */
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            overflow: hidden;
+        }
+        #chart-container {
+            width: 100%;
+            height: 70%;
+        }
+        #user-info {
+            padding: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="user-info">
+        <h1 id="greeting">Загрузка данных пользователя...</h1>
+    </div>
+
+    <div id="chart-container"></div>
+    
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        // --- 1. Инициализация Telegram Web App ---
+        const tg = window.Telegram.WebApp;
+        tg.ready(); // Сообщаем Telegram, что приложение готово
+        tg.expand(); // Раскрываем приложение на весь экран
+
+        // Приветствуем пользователя
+        const greetingEl = document.getElementById('greeting');
+        if (tg.initDataUnsafe.user) {
+            greetingEl.innerText = `Привет, ${tg.initDataUnsafe.user.first_name || 'пользователь'}!`;
+        } else {
+            greetingEl.innerText = 'Добро пожаловать!';
+        }
+
+        // --- 2. Создание графика ---
+        const chartContainer = document.getElementById('chart-container');
+        const chart = LightweightCharts.createChart(chartContainer, {
+            width: chartContainer.clientWidth,
+            height: chartContainer.clientHeight,
+            layout: {
+                backgroundColor: '#121212',
+                textColor: 'rgba(255, 255, 255, 0.9)',
+            },
+            grid: {
+                vertLines: { color: '#333' },
+                horzLines: { color: '#333' },
+            },
+        });
+
+        const areaSeries = chart.addAreaSeries({
+            topColor: 'rgba(76, 175, 80, 0.56)',
+            bottomColor: 'rgba(76, 175, 80, 0.04)',
+            lineColor: 'rgba(76, 175, 80, 1)',
+            lineWidth: 2,
+        });
+
+        // --- 3. Генерация случайных данных для демонстрации ---
+        // В реальном проекте здесь нужно получать данные с API (например, Binance)
+        function generateRandomData() {
+            const data = [];
+            let time = new Date().getTime() / 1000;
+            let price = 100;
+            for (let i = 0; i < 100; i++) {
+                price += Math.random() * 2 - 1; // Случайное изменение цены
+                data.push({ time: time + i * 60, value: price }); // Новая точка каждую минуту
+            }
+            return data;
+        }
+
+        areaSeries.setData(generateRandomData());
+
+        // Подгоняем размер графика при изменении окна
+        window.addEventListener('resize', () => {
+            chart.resize(chartContainer.clientWidth, chartContainer.clientHeight);
+        });
+
+    </script>
+</body>
+</html>
