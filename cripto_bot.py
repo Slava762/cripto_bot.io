@@ -5,7 +5,7 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters
 # --- ВАШИ ДАННЫЕ ---
 BOT_TOKEN = '7203662704:AAGizI-3TREMhUXf55cMnZOMV8p6JYnWshs' 
 # URL, на котором будет размещено ваше веб-приложение (пока используем временный)
-WEB_APP_URL = 'https://alex-grs.github.io/telegram-web-app-demo/' # Замените на свой URL, когда он будет
+WEB_APP_URL = 'https://github.com/Slava762/cripto_bot.io' # Замените на свой URL, когда он будет
 
 # Команда /start
 async def start(update: Update, context) -> None:
