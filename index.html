@@ -100,7 +100,10 @@
     </div>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script>
+<script>
+    // ЖДЕМ, ПОКА ВСЯ СТРАНИЦА ЗАГРУЗИТСЯ
+    document.addEventListener('DOMContentLoaded', function() {
+
         // --- СЛОВАРЬ ДЛЯ ПЕРЕВОДОВ ---
         const translations = {
             en: {
@@ -130,23 +133,29 @@
         };
 
         // --- ФУНКЦИЯ СМЕНЫ ЯЗЫКА ---
-        function setLanguage(lang) {
+        window.setLanguage = function(lang) {
             document.querySelectorAll('[data-key]').forEach(element => {
                 const key = element.getAttribute('data-key');
                 if (translations[lang][key]) {
                     element.textContent = translations[lang][key];
                 }
             });
-
-            // Обновляем приветствие пользователя, если оно есть
             const userInfoEl = document.getElementById('user-info');
             if (userInfoEl.dataset.name) {
                 userInfoEl.innerText = `${translations[lang].user_greeting} ${userInfoEl.dataset.name}`;
             }
-
-            // Обновляем активную кнопку
             document.querySelector('.lang-btn.active').classList.remove('active');
             document.getElementById(`lang-${lang}`).classList.add('active');
+        }
+
+        // --- ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ ТАБОВ ---
+        window.switchTab = function(tabName) {
+            document.getElementById('login-form').classList.remove('active');
+            document.getElementById('register-form').classList.remove('active');
+            document.querySelector('.tab.active').classList.remove('active');
+            document.getElementById(tabName + '-form').classList.add('active');
+            // 'event' is deprecated, so we find the element by its id
+            document.getElementById('tab-' + tabName).classList.add('active');
         }
 
         // --- 1. Инициализация ---
@@ -157,22 +166,47 @@
         const userInfoEl = document.getElementById('user-info');
         if (tg.initDataUnsafe.user) {
             const userName = tg.initDataUnsafe.user.first_name;
-            userInfoEl.dataset.name = userName; // Сохраняем имя для будущего перевода
+            userInfoEl.dataset.name = userName;
         }
         
-        // --- 2. График (без изменений) ---
+        // --- 2. График ---
         const chartContainer = document.getElementById('chart-container');
-        const chart = LightweightCharts.createChart(chartContainer, { autoSize: true, layout: { backgroundColor: '#131722', textColor: 'rgba(255, 255, 255, 0.9)' }, grid: { vertLines: { color: '#1e222d' }, horzLines: { color: '#1e222d' } } });
-        const areaSeries = chart.addAreaSeries({ topColor: 'rgba(76, 175, 80, 0.56)', bottomColor: 'rgba(76, 175, 80, 0.04)', lineColor: 'rgba(76, 175, 80, 1)', lineWidth: 2 });
-        function generateRandomData() { const data = []; let time = Math.floor(new Date().getTime() / 1000); let price = 100; for (let i = 0; i < 150; i++) { price += (Math.random() - 0.5) * 2; data.push({ time: time + i * 60, value: price }); } return data; }
+        const chart = LightweightCharts.createChart(chartContainer, {
+            autoSize: true,
+            layout: {
+                backgroundColor: '#131722',
+                textColor: 'rgba(255, 255, 255, 0.9)',
+            },
+            grid: {
+                vertLines: { color: '#1e222d' },
+                horzLines: { color: '#1e222d' },
+            },
+        });
+
+        const areaSeries = chart.addAreaSeries({
+            topColor: 'rgba(76, 175, 80, 0.56)',
+            bottomColor: 'rgba(76, 175, 80, 0.04)',
+            lineColor: 'rgba(76, 175, 80, 1)',
+            lineWidth: 2,
+        });
+
+        function generateRandomData() {
+            const data = [];
+            let time = Math.floor(new Date().getTime() / 1000);
+            let price = 100;
+            for (let i = 0; i < 150; i++) {
+                price += (Math.random() - 0.5) * 2;
+                data.push({ time: time + i * 60, value: price });
+            }
+            return data;
+        }
         areaSeries.setData(generateRandomData());
         chart.timeScale().fitContent();
 
-        // --- 3. Табы (без изменений) ---
-        function switchTab(tabName) { document.getElementById('login-form').classList.remove('active'); document.getElementById('register-form').classList.remove('active'); document.querySelector('.tab.active').classList.remove('active'); document.getElementById(tabName + '-form').classList.add('active'); event.currentTarget.classList.add('active'); }
-
         // --- УСТАНОВКА ЯЗЫКА ПО УМОЛЧАНИЮ ---
-        setLanguage('en'); // Устанавливаем английский по умолчанию
-    </script>
+        setLanguage('en');
+
+    }); // <-- ЗАКРЫВАЕМ ОБРАБОТЧИК DOMContentLoaded
+</script>
 </body>
 </html>
