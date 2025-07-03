@@ -4,472 +4,87 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Trading Terminal</title>
-    <!-- Подключаем иконки -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        :root {
-            --bg-color: #131722;
-            --primary-text: #d1d4dc;
-            --secondary-text: #8c8f96;
-            --border-color: #2a2e39;
-            --green: #03c283;
-            --red: #f15252;
-            --blue: #007bff;
-        }
-
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--primary-text);
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        .container {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            width: 100%;
-        }
-
-        /* --- Экран Авторизации --- */
-        #auth-screen {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        .auth-form {
-            width: 100%;
-            max-width: 320px;
-            background-color: #1e222d;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-        }
-        
-        .auth-form h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
-
-        .input-group {
-            margin-bottom: 15px;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 12px;
-            background-color: var(--bg-color);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--primary-text);
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-        
-        .input-group input:focus {
-            outline: none;
-            border-color: var(--blue);
-        }
-
-        .auth-btn {
-            width: 100%;
-            padding: 12px;
-            background-color: var(--blue);
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        
-        .auth-btn:hover {
-            background-color: #0056b3;
-        }
-
-        .toggle-form {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 14px;
-            color: var(--secondary-text);
-        }
-        
-        .toggle-form span {
-            color: var(--blue);
-            cursor: pointer;
-        }
-        
-        #message-box {
-            margin-top: 15px;
-            padding: 10px;
-            border-radius: 8px;
-            text-align: center;
-            display: none;
-        }
-        
+        :root { --bg-color: #131722; --primary-text: #d1d4dc; --secondary-text: #8c8f96; --border-color: #2a2e39; --green: #03c283; --red: #f15252; --blue: #007bff; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; background-color: var(--bg-color); color: var(--primary-text); }
+        /* ... (все остальные стили без изменений) ... */
+        .container { display: flex; flex-direction: column; height: 100%; width: 100%; }
+        #auth-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 20px; box-sizing: border-box; }
+        .auth-form { width: 100%; max-width: 320px; background-color: #1e222d; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        .auth-form h2 { text-align: center; margin-bottom: 20px; font-weight: 600; }
+        .input-group { margin-bottom: 15px; }
+        .input-group input { width: 100%; padding: 12px; background-color: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px; color: var(--primary-text); font-size: 16px; box-sizing: border-box; }
+        .input-group input:focus { outline: none; border-color: var(--blue); }
+        .auth-btn { width: 100%; padding: 12px; background-color: var(--blue); border: none; border-radius: 8px; color: white; font-size: 16px; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
+        .toggle-form { text-align: center; margin-top: 15px; font-size: 14px; color: var(--secondary-text); }
+        .toggle-form span { color: var(--blue); cursor: pointer; }
+        #message-box { margin-top: 15px; padding: 10px; border-radius: 8px; text-align: center; display: none; }
         #message-box.success { background-color: rgba(3, 194, 131, 0.2); color: var(--green); }
         #message-box.error { background-color: rgba(241, 82, 82, 0.2); color: var(--red); }
-
-        /* --- Основной Экран Приложения --- */
-        #main-app {
-            display: none; /* Изначально скрыт */
-            flex-direction: column;
-            height: 100%;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 15px;
-            background-color: #1e222d;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
+        #main-app { display: none; flex-direction: column; height: 100%; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background-color: #1e222d; border-bottom: 1px solid var(--border-color); }
         .header-info .pair { font-size: 18px; font-weight: bold; }
         .header-info .price { font-size: 14px; color: var(--green); }
-
         .balance-section { text-align: right; }
         .balance-section .label { font-size: 12px; color: var(--secondary-text); }
         .balance-section .amount { font-size: 16px; font-weight: 600; }
-        .balance-section .deposit-btn {
-            background: none;
-            border: 1px solid var(--blue);
-            color: var(--blue);
-            padding: 5px 10px;
-            border-radius: 6px;
-            font-size: 12px;
-            margin-top: 5px;
-            cursor: pointer;
-        }
-
-
-        .chart-container {
-            flex-grow: 1;
-            position: relative;
-        }
-        
-        #tradingChart {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-        }
-
-        .controls {
-            display: flex;
-            gap: 10px;
-            padding: 15px;
-            background-color: #1e222d;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .control-btn {
-            flex-grow: 1;
-            padding: 15px;
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: bold;
-            color: white;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-        .control-btn:hover { opacity: 0.9; }
+        .balance-section .deposit-btn { background: none; border: 1px solid var(--blue); color: var(--blue); padding: 5px 10px; border-radius: 6px; font-size: 12px; margin-top: 5px; cursor: pointer; }
+        .chart-container { flex-grow: 1; position: relative; }
+        #tradingChart { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
+        .controls { display: flex; gap: 10px; padding: 15px; background-color: #1e222d; border-top: 1px solid var(--border-color); }
+        .control-btn { flex-grow: 1; padding: 15px; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; color: white; cursor: pointer; }
         .buy { background-color: var(--green); }
         .sell { background-color: var(--red); }
-
     </style>
 </head>
 <body>
-
-    <!-- ЭКРАН АВТОРИЗАЦИИ (ВИДЕН ПО УМОЛЧАНИЮ) -->
-    <div id="auth-screen">
-        <div class="auth-form">
-            <!-- Форма входа -->
-            <div id="login-form">
-                <h2>Вход в аккаунт</h2>
-                <div class="input-group">
-                    <input type="email" id="login-email" placeholder="Email" required>
-                </div>
-                <div class="input-group">
-                    <input type="password" id="login-password" placeholder="Пароль" required>
-                </div>
-                <button id="login-btn" class="auth-btn">Войти</button>
-                <p class="toggle-form">Нет аккаунта? <span onclick="toggleForms()">Регистрация</span></p>
-            </div>
-
-            <!-- Форма регистрации (скрыта) -->
-            <div id="register-form" style="display: none;">
-                <h2>Создать аккаунт</h2>
-                <div class="input-group">
-                    <input type="email" id="register-email" placeholder="Email" required>
-                </div>
-                <div class="input-group">
-                    <input type="text" id="register-username" placeholder="Имя пользователя" required>
-                </div>
-                <div class="input-group">
-                    <input type="password" id="register-password" placeholder="Пароль" required>
-                </div>
-                <button id="register-btn" class="auth-btn">Создать</button>
-                <p class="toggle-form">Уже есть аккаунт? <span onclick="toggleForms()">Войти</span></p>
-            </div>
-            
-            <div id="message-box"></div>
-        </div>
-    </div>
-
-    <!-- ОСНОВНОЕ ПРИЛОЖЕНИЕ (СКРЫТО ПО УМОЛЧАНИЮ) -->
-    <div id="main-app" class="container">
-        <header class="header">
-            <div class="header-info">
-                <div class="pair">BTC/USD</div>
-                <div class="price" id="current-price">0.00</div>
-            </div>
-            <div class="balance-section">
-                <div class="label">Баланс</div>
-                <div class="amount" id="balance-amount">$10,000.00</div>
-                 <!-- Placeholder для кнопки пополнения через TON -->
-                <button class="deposit-btn" onclick="alert('Функция пополнения через TON Connect в разработке')">
-                    <i class="fa-solid fa-plus"></i> Deposit
-                </button>
-            </div>
-        </header>
-
-        <main class="chart-container">
-            <canvas id="tradingChart"></canvas>
-        </main>
-
-        <footer class="controls">
-            <button class="control-btn sell"><i class="fa-solid fa-arrow-down"></i> Sell</button>
-            <button class="control-btn buy"><i class="fa-solid fa-arrow-up"></i> Buy</button>
-        </footer>
-    </div>
+    <!-- ... (весь HTML без изменений) ... -->
+    <div id="auth-screen"><div class="auth-form"><div id="login-form"><h2>Вход в аккаунт</h2><div class="input-group"><input type="email" id="login-email" placeholder="Email" required></div><div class="input-group"><input type="password" id="login-password" placeholder="Пароль" required></div><button id="login-btn" class="auth-btn">Войти</button><p class="toggle-form">Нет аккаунта? <span onclick="toggleForms()">Регистрация</span></p></div><div id="register-form" style="display: none;"><h2>Создать аккаунт</h2><div class="input-group"><input type="email" id="register-email" placeholder="Email" required></div><div class="input-group"><input type="text" id="register-username" placeholder="Имя пользователя" required></div><div class="input-group"><input type="password" id="register-password" placeholder="Пароль" required></div><button id="register-btn" class="auth-btn">Создать</button><p class="toggle-form">Уже есть аккаунт? <span onclick="toggleForms()">Войти</span></p></div><div id="message-box"></div></div></div><div id="main-app" class="container"><header class="header"><div class="header-info"><div class="pair">BTC/USD</div><div class="price" id="current-price">0.00</div></div><div class="balance-section"><div class="label">Баланс</div><div class="amount" id="balance-amount">$10,000.00</div><button class="deposit-btn" onclick="alert('Функция пополнения через TON Connect в разработке')"><i class="fa-solid fa-plus"></i> Deposit</button></div></header><main class="chart-container"><canvas id="tradingChart"></canvas></main><footer class="controls"><button class="control-btn sell"><i class="fa-solid fa-arrow-down"></i> Sell</button><button class="control-btn buy"><i class="fa-solid fa-arrow-up"></i> Buy</button></footer></div>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
-
     <script>
-        // --- ИНИЦИАЛИЗАЦИЯ TELEGRAM WEB APP ---
+        // --- КОНФИГУРАЦИЯ ---
+        // ВАЖНО: Сюда нужно вставить публичный адрес вашего сервера, полученный от ngrok
+        const API_BASE_URL = 'https://your-ngrok-url.ngrok-free.app'; // <-- ЗАМЕНИТЕ ПОЗЖЕ
+
+        // ... (весь остальной JavaScript без изменений) ...
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
-        // Убираем стандартный цвет фона, чтобы наше приложение выглядело цельным
         tg.setHeaderColor('secondary_bg_color');
         tg.setBackgroundColor('#131722');
-
-        // --- ЭЛЕМЕНТЫ DOM ---
         const authScreen = document.getElementById('auth-screen');
         const mainApp = document.getElementById('main-app');
         const loginForm = document.getElementById('login-form');
         const registerForm = document.getElementById('register-form');
         const messageBox = document.getElementById('message-box');
-        
-        // --- ЛОГИКА АВТОРИЗАЦИИ ---
-        function toggleForms() {
-            loginForm.style.display = loginForm.style.display === 'none' ? 'block' : 'none';
-            registerForm.style.display = registerForm.style.display === 'none' ? 'block' : 'none';
-            hideMessage();
-        }
-
-        function showMessage(text, type) {
-            messageBox.textContent = text;
-            messageBox.className = type; // 'success' или 'error'
-            messageBox.style.display = 'block';
-        }
-        
-        function hideMessage() {
-            messageBox.style.display = 'none';
-        }
-
+        function toggleForms() { loginForm.style.display = loginForm.style.display === 'none' ? 'block' : 'none'; registerForm.style.display = registerForm.style.display === 'none' ? 'block' : 'none'; hideMessage(); }
+        function showMessage(text, type) { messageBox.textContent = text; messageBox.className = type; messageBox.style.display = 'block'; }
+        function hideMessage() { messageBox.style.display = 'none'; }
         document.getElementById('register-btn').addEventListener('click', async () => {
-            const email = document.getElementById('register-email').value;
-            const username = document.getElementById('register-username').value;
-            const password = document.getElementById('register-password').value;
-            
+            const email = document.getElementById('register-email').value, username = document.getElementById('register-username').value, password = document.getElementById('register-password').value;
             try {
-                const response = await fetch('/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, username, password })
-                });
+                const response = await fetch(`${API_BASE_URL}/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, username, password }) });
                 const result = await response.json();
-                if (result.success) {
-                    showMessage(result.message, 'success');
-                    setTimeout(() => toggleForms(), 1500); // Переключаем на форму входа после успеха
-                } else {
-                    showMessage(result.message, 'error');
-                }
-            } catch (error) {
-                showMessage('Ошибка сети при регистрации', 'error');
-            }
+                if (response.ok) { showMessage(result.message, 'success'); setTimeout(() => toggleForms(), 1500); } else { showMessage(result.message || 'Произошла ошибка', 'error'); }
+            } catch (error) { console.error('Reg error:', error); showMessage('Ошибка сети. Проверьте адрес сервера и его статус.', 'error'); }
         });
-
         document.getElementById('login-btn').addEventListener('click', async () => {
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            
+            const email = document.getElementById('login-email').value, password = document.getElementById('login-password').value;
             try {
-                const response = await fetch('/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
+                const response = await fetch(`${API_BASE_URL}/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
                 const result = await response.json();
-                if (result.success) {
-                    // Прячем экран авторизации и показываем приложение
-                    authScreen.style.display = 'none';
-                    mainApp.style.display = 'flex';
-                    // Запускаем график и обновляем UI
-                    startTradingApp(result.user);
-                } else {
-                    showMessage(result.message, 'error');
-                }
-            } catch (error) {
-                showMessage('Ошибка сети при входе', 'error');
-            }
+                if (response.ok) { authScreen.style.display = 'none'; mainApp.style.display = 'flex'; startTradingApp(result.user); } else { showMessage(result.message || 'Произошла ошибка', 'error'); }
+            } catch (error) { console.error('Login error:', error); showMessage('Ошибка сети. Проверьте адрес сервера и его статус.', 'error'); }
         });
-
-        // --- ЛОГИКА ТОРГОВОГО ПРИЛОЖЕНИЯ ---
-        let chart;
-        let trend = 'random'; // Тренд по умолчанию
-        let lastValue = 65000; // Начальное значение
-
-        function startTradingApp(user) {
-            // Обновляем информацию о пользователе
-            document.getElementById('balance-amount').textContent = `$${parseFloat(user.balance).toFixed(2)}`;
-            
-            // Настраиваем график
-            setupChart();
-            
-            // Подключаемся к WebSocket для получения трендов
-            connectWebSocket();
-            
-            // Запускаем обновление данных на графике
-            setInterval(addData, 1000);
-        }
-        
-        function setupChart() {
-            const ctx = document.getElementById('tradingChart').getContext('2d');
-            
-            // Градиент для фона графика
-            const gradient = ctx.createLinearGradient(0, 0, 0, ctx.canvas.clientHeight * 1.5);
-            gradient.addColorStop(0, 'rgba(3, 194, 131, 0.2)');
-            gradient.addColorStop(1, 'rgba(19, 23, 34, 0)');
-
-
-            const chartData = {
-                datasets: [{
-                    label: 'BTC/USD',
-                    data: [],
-                    borderColor: 'rgba(3, 194, 131, 1)',
-                    borderWidth: 2,
-                    tension: 0.3,
-                    fill: true,
-                    backgroundColor: gradient,
-                    pointRadius: 0,
-                    pointHoverRadius: 0,
-                }]
-            };
-
-            chart = new Chart(ctx, {
-                type: 'line',
-                data: chartData,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: { 
-                            type: 'time', 
-                            time: { unit: 'second', displayFormats: { second: 'HH:mm:ss' } }, 
-                            ticks: { color: 'rgba(255,255,255,0.3)', maxTicksLimit: 6 }, 
-                            grid: { color: 'rgba(255,255,255,0.05)' } 
-                        },
-                        y: { 
-                            position: 'right',
-                            ticks: { color: 'rgba(255,255,255,0.5)' }, 
-                            grid: { color: 'rgba(255,255,255,0.05)' } 
-                        }
-                    },
-                    plugins: { legend: { display: false } },
-                    animation: { duration: 250 },
-                    interaction: { intersect: false, mode: 'index' },
-                }
-            });
-        }
-
-        function connectWebSocket() {
-            // Определяем протокол (ws или wss для https)
-            const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            // ВАЖНО: Убедитесь, что хост правильный. При локальном запуске это будет `localhost:5001`.
-            // При развертывании на сервере - домен вашего сервера.
-            const wsHost = window.location.hostname === 'slava762.github.io' 
-                ? 'ВАШ_ДОМЕН_СЕРВЕРА' // <-- ЗАМЕНИТЕ НА АДРЕС ВАШЕГО СЕРВЕРА
-                : `${window.location.hostname}:5001`;
-
-            const ws = new WebSocket(`${wsProtocol}//${wsHost}/ws`);
-
-            ws.onopen = () => console.log("WebSocket connected!");
-            ws.onmessage = (event) => {
-                // Получаем новый тренд с сервера и обновляем его
-                trend = event.data; 
-                console.log("New trend received:", trend);
-            };
-            ws.onclose = () => {
-                console.log("WebSocket disconnected. Reconnecting in 3 seconds...");
-                // Пытаемся переподключиться через 3 секунды
-                setTimeout(connectWebSocket, 3000);
-            };
-            ws.onerror = (error) => {
-                console.error("WebSocket Error:", error);
-                ws.close(); // Закрываем соединение при ошибке, чтобы сработал onclose
-            };
-        }
-
-        function addData() {
-            if (!chart) return;
-            
-            const data = chart.data.datasets[0].data;
-            const fluctuation = Math.random() * 50; // Амплитуда колебаний
-
-            if (trend === 'up') {
-                lastValue += fluctuation;
-            } else if (trend === 'down') {
-                lastValue -= fluctuation;
-            } else { // 'random'
-                lastValue += (fluctuation - 25); // Случайное движение
-            }
-
-            // Не даем графику уйти слишком далеко
-            if (lastValue < 1000) lastValue = 1000;
-
-            const newDataPoint = { x: Date.now(), y: lastValue };
-            data.push(newDataPoint);
-
-            // Ограничиваем количество точек на графике для производительности
-            if (data.length > 60) {
-                data.shift();
-            }
-            
-            // Обновляем текущую цену в хедере
-            const currentPriceEl = document.getElementById('current-price');
-            currentPriceEl.textContent = lastValue.toFixed(2);
-            currentPriceEl.style.color = data.length > 1 && data[data.length-1].y >= data[data.length-2].y ? 'var(--green)' : 'var(--red)';
-
-            chart.update('none'); // Обновляем без анимации для плавности
-        }
+        let chart, trend = 'random', lastValue = 65000;
+        function startTradingApp(user) { document.getElementById('balance-amount').textContent = `$${parseFloat(user.balance).toFixed(2)}`; setupChart(); connectWebSocket(); setInterval(addData, 1000); }
+        function setupChart() { const ctx = document.getElementById('tradingChart').getContext('2d'); const gradient = ctx.createLinearGradient(0, 0, 0, ctx.canvas.clientHeight * 1.5); gradient.addColorStop(0, 'rgba(3, 194, 131, 0.2)'); gradient.addColorStop(1, 'rgba(19, 23, 34, 0)'); chart = new Chart(ctx, { type: 'line', data: { datasets: [{ label: 'BTC/USD', data: [], borderColor: 'rgba(3, 194, 131, 1)', borderWidth: 2, tension: 0.3, fill: true, backgroundColor: gradient, pointRadius: 0 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { type: 'time', time: { unit: 'second', displayFormats: { second: 'HH:mm:ss' } }, ticks: { color: 'rgba(255,255,255,0.3)', maxTicksLimit: 6 }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { position: 'right', ticks: { color: 'rgba(255,255,255,0.5)' }, grid: { color: 'rgba(255,255,255,0.05)' } } }, plugins: { legend: { display: false } }, animation: { duration: 250 } } }); }
+        function connectWebSocket() { const wsUrl = API_BASE_URL.replace(/^http/, 'ws'); const ws = new WebSocket(`${wsUrl}/ws`); ws.onopen = () => console.log("WebSocket connected!"); ws.onmessage = (event) => { trend = event.data; }; ws.onclose = () => { setTimeout(connectWebSocket, 3000); }; ws.onerror = (error) => { ws.close(); }; }
+        function addData() { if (!chart) return; const data = chart.data.datasets[0].data; const fluctuation = Math.random() * 50; if (trend === 'up') lastValue += fluctuation; else if (trend === 'down') lastValue -= fluctuation; else lastValue += (fluctuation - 25); if (lastValue < 1000) lastValue = 1000; data.push({ x: Date.now(), y: lastValue }); if (data.length > 60) data.shift(); const currentPriceEl = document.getElementById('current-price'); currentPriceEl.textContent = lastValue.toFixed(2); currentPriceEl.style.color = data.length > 1 && data[data.length-1].y >= data[data.length-2].y ? 'var(--green)' : 'var(--red)'; chart.update('none'); }
     </script>
 </body>
 </html>
