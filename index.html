@@ -158,64 +158,73 @@
         </div>
     </div>
 
-    <script>
+<script>
     document.addEventListener('DOMContentLoaded', function() {
-        // DICTIONARY
-        const translations = {
-            en: { login_tab: "Login", register_tab: "Register", auth_header: "Authorization", email_label: "Email", password_label: "Password", login_button: "Login", register_header: "Create Account", username_label: "Username", register_button: "Register" },
-            ru: { login_tab: "Вход", register_tab: "Регистрация", auth_header: "Авторизация", email_label: "Email", password_label: "Пароль", login_button: "Войти", register_header: "Создать аккаунт", username_label: "Имя пользователя", register_button: "Зарегистрироваться" }
-        };
-
-        // GLOBAL FUNCTIONS
-        window.setLanguage = function(lang) {
-            document.querySelectorAll('[data-key]').forEach(el => {
-                const key = el.getAttribute('data-key');
-                if(translations[lang]?.[key]) el.textContent = translations[lang][key];
-            });
-            document.querySelectorAll('.lang-btn.active').forEach(b => b.classList.remove('active'));
-            document.getElementById(`lang-${lang}`)?.classList.add('active');
-        };
-
-        window.switchTab = function(tabName) {
-            document.querySelectorAll('.form-content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(`${tabName}-form`)?.classList.add('active');
-            document.getElementById(`tab-${tabName}`)?.classList.add('active');
-        };
-
-        // CHART INITIALIZATION
-        const chartContainer = document.getElementById('chart-container');
-        if (chartContainer) {
-            const chart = LightweightCharts.createChart(chartContainer, {
-                autoSize: true,
-                layout: { backgroundColor: '#131722', textColor: '#d1d4dc' },
-                grid: { vertLines: { color: '#1e222d' }, horzLines: { color: '#1e222d' } }
-            });
-            const areaSeries = chart.addAreaSeries({
-                topColor: 'rgba(76, 175, 80, 0.56)', bottomColor: 'rgba(76, 175, 80, 0.04)',
-                lineColor: 'rgba(76, 175, 80, 1)', lineWidth: 2
-            });
-            const data = []; let time = Math.floor(Date.now() / 1000);
-            for (let i = 0; i < 150; i++) { data.push({ time: time - (150 - i) * 60, value: 100 + (Math.random() - 0.5) * 5 * i * 0.1 }); }
-            areaSeries.setData(data);
-            chart.timeScale().fitContent();
-        }
-
-        // APP INITIALIZATION
         try {
-            window.Telegram.WebApp.ready();
-            window.Telegram.WebApp.expand();
+            // DICTIONARY
+            const translations = {
+                en: { login_tab: "Login", register_tab: "Register", auth_header: "Authorization", email_label: "Email", password_label: "Password", login_button: "Login", register_header: "Create Account", username_label: "Username", register_button: "Register" },
+                ru: { login_tab: "Вход", register_tab: "Регистрация", auth_header: "Авторизация", email_label: "Email", password_label: "Пароль", login_button: "Войти", register_header: "Создать аккаунт", username_label: "Имя пользователя", register_button: "Зарегистрироваться" }
+            };
+
+            // GLOBAL FUNCTIONS
+            window.setLanguage = function(lang) {
+                document.querySelectorAll('[data-key]').forEach(el => {
+                    const key = el.getAttribute('data-key');
+                    if(translations[lang]?.[key]) el.textContent = translations[lang][key];
+                });
+                document.querySelectorAll('.lang-btn.active').forEach(b => b.classList.remove('active'));
+                const langBtn = document.getElementById(`lang-${lang}`);
+                if (langBtn) langBtn.classList.add('active');
+            };
+
+            window.switchTab = function(tabName) {
+                document.querySelectorAll('.form-content').forEach(c => c.classList.remove('active'));
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+
+                const form = document.getElementById(`${tabName}-form`);
+                const tab = document.getElementById(`tab-${tabName}`);
+                if (form) form.classList.add('active');
+                if (tab) tab.classList.add('active');
+            };
+
+            // SET DEFAULTS FIRST
+            switchTab('login');
+            setLanguage('en');
+
+            // CHART INITIALIZATION
+            const chartContainer = document.getElementById('chart-container');
+            if (chartContainer) {
+                const chart = LightweightCharts.createChart(chartContainer, {
+                    autoSize: true,
+                    layout: { backgroundColor: '#131722', textColor: '#d1d4dc' },
+                    grid: { vertLines: { color: '#1e222d' }, horzLines: { color: '#1e222d' } }
+                });
+                const areaSeries = chart.addAreaSeries({
+                    topColor: 'rgba(76, 175, 80, 0.56)', bottomColor: 'rgba(76, 175, 80, 0.04)',
+                    lineColor: 'rgba(76, 175, 80, 1)', lineWidth: 2
+                });
+                const data = []; let time = Math.floor(Date.now() / 1000);
+                for (let i = 0; i < 150; i++) { data.push({ time: time - (150 - i) * 60, value: 100 + (Math.random() - 0.5) * 5 * i * 0.1 }); }
+                areaSeries.setData(data);
+                chart.timeScale().fitContent();
+            }
+
+            // TELEGRAM API
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.ready();
+                window.Telegram.WebApp.expand();
+            }
+            
+            // VISUAL CONFIRMATION
+            document.body.style.border = '3px solid limegreen';
+
         } catch (e) {
-            console.error("Telegram WebApp script not found or failed.", e);
+            // Если что-то пойдет не так, мы увидим красную рамку
+            document.body.style.border = '3px solid red';
+            console.error(e);
         }
-        
-        // SET DEFAULT STATE
-        switchTab('login');
-        setLanguage('en');
-        
-        // DEBUG BORDER TO CONFIRM SCRIPT RUN
-        document.body.style.border = '3px solid limegreen';
     });
-    </script>
+</script>
 </body>
 </html>
