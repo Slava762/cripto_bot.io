@@ -2,95 +2,177 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Торговый Терминал</title>
     <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
     <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100vh;
-            background-color: #121212; /* Темный фон */
-            color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            overflow: hidden;
+        /* ... (все ваши стили остаются без изменений) ... */
+        body, html { margin: 0; padding: 0; width: 100%; height: 100vh; background-color: #131722; color: #d1d4dc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; overflow: hidden; display: flex; }
+        .main-container { display: flex; width: 100%; height: 100%; }
+        .chart-section { flex-grow: 1; height: 100%; display: flex; flex-direction: column; }
+        #chart-container { width: 100%; flex-grow: 1; }
+        .controls-section { width: 300px; min-width: 280px; height: 100%; background-color: #1e222d; border-left: 1px solid #2a2e39; padding: 15px; box-sizing: border-box; display: flex; flex-direction: column; overflow-y: auto; position: relative; } /* Добавили position: relative */
+        .form-container { width: 100%; }
+        .form-tabs { display: flex; margin-bottom: 20px; }
+        .tab { padding: 10px 15px; cursor: pointer; flex-grow: 1; text-align: center; background-color: #2a2e39; border: 1px solid #2a2e39; border-bottom: 1px solid #4a4e59; color: #d1d4dc; }
+        .tab.active { background-color: #1e222d; border-bottom-color: transparent; color: #fff; }
+        .form-content { display: none; }
+        .form-content.active { display: block; }
+        h3 { text-align: center; color: #fff; margin-bottom: 20px; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 5px; font-size: 14px; color: #b2b5be; }
+        .input-group input { width: 100%; padding: 10px; background-color: #2a2e39; border: 1px solid #4a4e59; border-radius: 4px; color: #d1d4dc; box-sizing: border-box; }
+        .submit-button { width: 100%; padding: 12px; background-color: #2962ff; border: none; border-radius: 4px; color: #fff; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .submit-button:hover { background-color: #1e53e5; }
+
+        /* Стили для кнопок языка */
+        .lang-switcher {
+            position: absolute;
+            top: 10px;
+            right: 15px;
         }
-        #chart-container {
-            width: 100%;
-            height: 70%;
+        .lang-btn {
+            background: none;
+            border: 1px solid #4a4e59;
+            color: #d1d4dc;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-left: 5px;
         }
-        #user-info {
-            padding: 10px;
-            text-align: center;
+        .lang-btn.active {
+            background-color: #2962ff;
+            border-color: #2962ff;
+            color: #fff;
         }
     </style>
 </head>
 <body>
 
-    <div id="user-info">
-        <h1 id="greeting">Загрузка данных пользователя...</h1>
+    <div class="main-container">
+        <div class="chart-section">
+            <div id="chart-container"></div>
+        </div>
+        <div class="controls-section">
+            
+            <div class="lang-switcher">
+                <button id="lang-en" class="lang-btn active" onclick="setLanguage('en')">EN</button>
+                <button id="lang-ru" class="lang-btn" onclick="setLanguage('ru')">RU</button>
+            </div>
+
+            <div class="form-container" style="margin-top: 40px;"> <div class="form-tabs">
+                    <div id="tab-login" class="tab active" onclick="switchTab('login')" data-key="login_tab">Вход</div>
+                    <div id="tab-register" class="tab" onclick="switchTab('register')" data-key="register_tab">Регистрация</div>
+                </div>
+
+                <div id="login-form" class="form-content active">
+                    <h3 data-key="auth_header">Авторизация</h3>
+                    <div class="input-group">
+                        <label for="login-email" data-key="email_label">Email</label>
+                        <input type="email" id="login-email" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="login-password" data-key="password_label">Пароль</label>
+                        <input type="password" id="login-password" required>
+                    </div>
+                    <button class="submit-button" data-key="login_button">Войти</button>
+                </div>
+
+                <div id="register-form" class="form-content">
+                    <h3 data-key="register_header">Создать аккаунт</h3>
+                    <div class="input-group">
+                        <label for="reg-username" data-key="username_label">Имя пользователя</label>
+                        <input type="text" id="reg-username" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="reg-email" data-key="email_label">Email</label>
+                        <input type="email" id="reg-email" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="reg-password" data-key="password_label">Пароль</label>
+                        <input type="password" id="reg-password" required>
+                    </div>
+                    <button class="submit-button" data-key="register_button">Зарегистрироваться</button>
+                </div>
+            </div>
+            
+            <div id="user-info" style="text-align: center; margin-top: 20px;"></div>
+        </div>
     </div>
 
-    <div id="chart-container"></div>
-    
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
-        // --- 1. Инициализация Telegram Web App ---
-        const tg = window.Telegram.WebApp;
-        tg.ready(); // Сообщаем Telegram, что приложение готово
-        tg.expand(); // Раскрываем приложение на весь экран
-
-        // Приветствуем пользователя
-        const greetingEl = document.getElementById('greeting');
-        if (tg.initDataUnsafe.user) {
-            greetingEl.innerText = `Привет, ${tg.initDataUnsafe.user.first_name || 'пользователь'}!`;
-        } else {
-            greetingEl.innerText = 'Добро пожаловать!';
-        }
-
-        // --- 2. Создание графика ---
-        const chartContainer = document.getElementById('chart-container');
-        const chart = LightweightCharts.createChart(chartContainer, {
-            width: chartContainer.clientWidth,
-            height: chartContainer.clientHeight,
-            layout: {
-                backgroundColor: '#121212',
-                textColor: 'rgba(255, 255, 255, 0.9)',
+        // --- СЛОВАРЬ ДЛЯ ПЕРЕВОДОВ ---
+        const translations = {
+            en: {
+                login_tab: "Login",
+                register_tab: "Register",
+                auth_header: "Authorization",
+                email_label: "Email",
+                password_label: "Password",
+                login_button: "Login",
+                register_header: "Create Account",
+                username_label: "Username",
+                register_button: "Register",
+                user_greeting: "Logged in as:"
             },
-            grid: {
-                vertLines: { color: '#333' },
-                horzLines: { color: '#333' },
-            },
-        });
-
-        const areaSeries = chart.addAreaSeries({
-            topColor: 'rgba(76, 175, 80, 0.56)',
-            bottomColor: 'rgba(76, 175, 80, 0.04)',
-            lineColor: 'rgba(76, 175, 80, 1)',
-            lineWidth: 2,
-        });
-
-        // --- 3. Генерация случайных данных для демонстрации ---
-        // В реальном проекте здесь нужно получать данные с API (например, Binance)
-        function generateRandomData() {
-            const data = [];
-            let time = new Date().getTime() / 1000;
-            let price = 100;
-            for (let i = 0; i < 100; i++) {
-                price += Math.random() * 2 - 1; // Случайное изменение цены
-                data.push({ time: time + i * 60, value: price }); // Новая точка каждую минуту
+            ru: {
+                login_tab: "Вход",
+                register_tab: "Регистрация",
+                auth_header: "Авторизация",
+                email_label: "Email",
+                password_label: "Пароль",
+                login_button: "Войти",
+                register_header: "Создать аккаунт",
+                username_label: "Имя пользователя",
+                register_button: "Зарегистрироваться",
+                user_greeting: "Вы вошли как:"
             }
-            return data;
+        };
+
+        // --- ФУНКЦИЯ СМЕНЫ ЯЗЫКА ---
+        function setLanguage(lang) {
+            document.querySelectorAll('[data-key]').forEach(element => {
+                const key = element.getAttribute('data-key');
+                if (translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+
+            // Обновляем приветствие пользователя, если оно есть
+            const userInfoEl = document.getElementById('user-info');
+            if (userInfoEl.dataset.name) {
+                userInfoEl.innerText = `${translations[lang].user_greeting} ${userInfoEl.dataset.name}`;
+            }
+
+            // Обновляем активную кнопку
+            document.querySelector('.lang-btn.active').classList.remove('active');
+            document.getElementById(`lang-${lang}`).classList.add('active');
         }
 
+        // --- 1. Инициализация ---
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+
+        const userInfoEl = document.getElementById('user-info');
+        if (tg.initDataUnsafe.user) {
+            const userName = tg.initDataUnsafe.user.first_name;
+            userInfoEl.dataset.name = userName; // Сохраняем имя для будущего перевода
+        }
+        
+        // --- 2. График (без изменений) ---
+        const chartContainer = document.getElementById('chart-container');
+        const chart = LightweightCharts.createChart(chartContainer, { autoSize: true, layout: { backgroundColor: '#131722', textColor: 'rgba(255, 255, 255, 0.9)' }, grid: { vertLines: { color: '#1e222d' }, horzLines: { color: '#1e222d' } } });
+        const areaSeries = chart.addAreaSeries({ topColor: 'rgba(76, 175, 80, 0.56)', bottomColor: 'rgba(76, 175, 80, 0.04)', lineColor: 'rgba(76, 175, 80, 1)', lineWidth: 2 });
+        function generateRandomData() { const data = []; let time = Math.floor(new Date().getTime() / 1000); let price = 100; for (let i = 0; i < 150; i++) { price += (Math.random() - 0.5) * 2; data.push({ time: time + i * 60, value: price }); } return data; }
         areaSeries.setData(generateRandomData());
+        chart.timeScale().fitContent();
 
-        // Подгоняем размер графика при изменении окна
-        window.addEventListener('resize', () => {
-            chart.resize(chartContainer.clientWidth, chartContainer.clientHeight);
-        });
+        // --- 3. Табы (без изменений) ---
+        function switchTab(tabName) { document.getElementById('login-form').classList.remove('active'); document.getElementById('register-form').classList.remove('active'); document.querySelector('.tab.active').classList.remove('active'); document.getElementById(tabName + '-form').classList.add('active'); event.currentTarget.classList.add('active'); }
 
+        // --- УСТАНОВКА ЯЗЫКА ПО УМОЛЧАНИЮ ---
+        setLanguage('en'); // Устанавливаем английский по умолчанию
     </script>
 </body>
 </html>
